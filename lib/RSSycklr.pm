@@ -551,7 +551,7 @@ RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds 
  my @feeds = ({ uri => "http://www.xkcd.com/atom.xml",
                 max_display => 1, },
               { uri => "http://feeds.theonion.com/theonion/daily" },
-              { title_override => "OH NOES, IZ TEH DED",
+              { title_override => "O NOES, IZ TEH DED",
                 uri => "http://rss.news.yahoo.com/rss/obits", });
  
  my $rsklr = RSSycklr->new();
@@ -944,13 +944,13 @@ Text only option for ledes? Makes it easier to work on that setting C<keep_tags>
 
 Put a name field for feeds to override the feed supplied title.
 
-Straighten out and make the validation controllable.
+Make the validation controllable.
 
 Make a master timeout vs a feed level timeout? No...
 
 Make utf8 a settable...?
 
-Move all the DTD handling, and all the other historical ones, HTML 1 and up, into a real distribution...? WWW::DTD?
+Move all the DTD handling, and all the other historical ones, HTML 1 and up, into a real distribution...? Ikegami's catalog stuff?
 
 Make attribute filter configurable.
 
@@ -962,7 +962,7 @@ Implement anything in the configuration example which reads, "not implemented." 
 
 Submit a patch, or ticket, to Benjamin for a content_type L<XML::Feed::Entry>. We're just assuming it's HTML.
 
-C<< Template->process >> should probably have a C<before> call to allow the config to be merged into the top of the template data.
+C<< Template-E<gt>process >> should probably have a C<before> call to allow the config to be merged into the top of the template data.
 
 Make image count configurable.
 
