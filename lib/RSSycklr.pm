@@ -550,7 +550,22 @@ RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds 
  
  my @feeds = ({ uri => "http://www.xkcd.com/atom.xml",
                 max_display => 1, },
-              { uri => "http://feeds.theonion.com/theonion/daily" },
+  { uri => "http://green.yahoo.com/rss/blogs/all"},
+  { uri => "http://www.mnn.com/rss/all-mnn-content"},
+  { uri => "http://feeds.grist.org/rss/gristfeed"},
+  { uri => "http://green.yahoo.com/rss/featured"},
+  { uri => "http://feeds.nationalgeographic.com/ng/NGM/NGM_Magazine"},
+  { uri => "http://feeds.feedburner.com/greenlivingarticles"},
+  { uri => "http://www.ecosherpa.com/feed/"},
+  { uri => "http://www.groovygreen.com/groove/?feed=atom"},
+  { uri => "http://blog.epa.gov/blog/feed/"},
+  { uri => "http://www.unep.org/newscentre/rss/rss.asp?rss-id=pr&l=en"},
+  { uri => "http://feeds.feedburner.com/treehuggersite"},
+  { uri => "http://redgreenandblue.org/feed/"},
+  { uri => "http://green.yahoo.com/rss/news"},
+  { uri => "http://news.cnet.com/8300-11128_3-54.xml"},
+  { uri => "http://news.google.com/news?rls=en-us&oe=UTF-8&um=1&tab=wn&hl=en&q=Environmental&ie=UTF-8&output=atom"},
+
               { title_override => "O NOES, IZ TEH DED",
                 uri => "http://rss.news.yahoo.com/rss/obits", });
  
@@ -558,13 +573,13 @@ RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds 
  
  $rsklr->config({ feeds => \@feeds,
                   title_only => 1 });
- 
+ print $rsklr->as_string; exit;#321
  while ( my $feed = $rsklr->next() )
  {
-     print Encode::encode_utf8( $feed->title_override || $feed->title ), "\n";
+     print encode_utf8( $feed->title_override || $feed->title ), "\n";
      for my $entry ( $feed->entries )
      {
-         print "\t* ", Encode::encode_utf8( $entry->title ), "\n";
+         print "\t* ", encode_utf8( $entry->title ), "\n";
      }
  }
 
@@ -573,8 +588,8 @@ RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds 
 This is a more of a mini-app engine than a pure module. RSSycklr is a package that wraps up the best parts of L<XML::Feed> and L<HTML::Truncate> then filters it through L<XML::LibXML> to guarantee valid XHTML and adds a side of L<Template> for auto-formatted output of XHTML fragments should you so desire.
 
 This is probably easier to show with examples than explain. This is the part where I show, or maybe explain, someday. For now, take a look at the L</CONFIGURATION> sample below and the source for the tool 'rssycklr' that comes with this distribution.
-
-XHTML validation is currently based on "-//W3C//DTD XHTML 1.0 Transitional//EN" and errors are B<not fatal>. They L<carp|Carp/carp> right now. You will be able to pick your DTD eventually and decide if errors are fatals or skip the entry or just complain.
+ 
+XHTML validation is currently based on "-//W3C//DTD XHTML 1.0 Transitional//EN" and errors are B<not fatal>. You will be able to pick your DTD eventually and decide if errors are fatals or skip the entry or just complain.
 
 =head1 METHODS
 
@@ -984,7 +999,7 @@ L<XML::Feed>, L<XML::Feed::Entry>, L<Mouse>/L<Moose>, L<XML::LibXML>, L<Template
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright (E<copy>) 2008-2009 Ashley Pond V.
+Copyright (E<copy>) 2008-2010 Ashley Pond V.
 
 This program is free software; you can redistribute it or modify it or both under the same terms as Perl itself.
 
