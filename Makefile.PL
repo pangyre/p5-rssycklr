@@ -6,7 +6,7 @@ license "perl";
 all_from "lib/RSSycklr.pm";
 resources repository => 'git@github.com:pangyre/p5-rssycklr.git';
 
-requires "Moose";
+requires "Mouse";
 requires "XML::LibXML";
 requires "XML::Feed";
 requires "Template";
@@ -21,6 +21,7 @@ requires "Pod::Usage";
 requires "Getopt::Long";
 requires "File::ShareDir";
 requires "Hash::Merge::Simple";
+requires "Capture::Tiny";
 
 system('pod2text lib/RSSycklr.pm > README');
 

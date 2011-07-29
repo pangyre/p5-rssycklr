@@ -1,4 +1,10 @@
 Revision history for RSSycklr
+0.13    20110728
+        - Silencing a long standing issue with noisy XML::LibXML.
+        - Going back to Mouse.
+        - General lack of review and checking what I may or may not
+          have changed in a long time.
+        - Get .git out of MANIFEST. Jeeze.
 
 0.12    20100917
         - Added time to datetime timestamps.

@@ -1,20 +1,22 @@
 package RSSycklr;
-use Moose;
+use Mouse;
 no warnings "uninitialized";
-use Carp qw( carp confess croak );
+use Carp ( qw/ carp confess croak / );
 use YAML ();
 use XML::Feed ();
 use HTML::Truncate ();
 use HTML::TokeParser::Simple ();
 use XML::LibXML ();
 use DateTime ();
-use Scalar::Util qw( blessed );
+use Scalar::Util "blessed";
 use URI ();
 use File::ShareDir ();
-use Hash::Merge::Simple qw( merge );
-use Encode qw( decode_utf8 );
+use Hash::Merge::Simple "merge";
+use File::Spec;
+use Encode;
+use Capture::Tiny "capture";
 
-our $VERSION = "0.12";
+our $VERSION = "0.13";
 
 has "keep_tags" =>
     is => "rw",
@@ -27,6 +29,12 @@ has "keep_tags" =>
                                       strike s tt a )
                };
     },
+    ;
+
+has "debug" =>
+    is => "rw",
+    isa => "Bool",
+    default => sub { 0 },
     ;
 
 has "tt2" =>
@@ -210,7 +218,8 @@ sub next {
     alarm(0); # Racing parsing fatals can happen in the XML::Feed space(?).
     unless ( $ok == 1 )
     {
-        carp $@ || ( "Unknown error parsing " . $info->{uri} );
+        carp $@ || ( "Unknown error parsing " . $info->{uri} )
+            if $self->debug;
         return $self->next;
     }
 
@@ -343,9 +352,13 @@ sub html_to_dom {
             $renew .= $token->as_is;
         }
     }
+
+    # XML::LibXML is noisy even with recover_silently, so-
+    my ( $out, $err ) = capture {
     $self->parse_html_string(<<"HTML");
 <html><head><title>Untitled</title></head><body>$renew</body></html>
 HTML
+    };
 }
 
 sub _maxed_out {
@@ -537,10 +550,6 @@ __END__
 
 RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds into tailored, guaranteed XHTML fragments.
 
-=head1 VERSION
-
-0.12
-
 =head1 SYNOPSIS
 
  use strict;
@@ -549,37 +558,40 @@ RSSycklr - (beta) Highly configurable recycling of syndication (RSS/Atom) feeds 
  use Encode;
  
  my @feeds = ({ uri => "http://www.xkcd.com/atom.xml",
-                max_display => 1, },
-  { uri => "http://green.yahoo.com/rss/blogs/all"},
-  { uri => "http://www.mnn.com/rss/all-mnn-content"},
-  { uri => "http://feeds.grist.org/rss/gristfeed"},
-  { uri => "http://green.yahoo.com/rss/featured"},
-  { uri => "http://feeds.nationalgeographic.com/ng/NGM/NGM_Magazine"},
-  { uri => "http://feeds.feedburner.com/greenlivingarticles"},
-  { uri => "http://www.ecosherpa.com/feed/"},
-  { uri => "http://www.groovygreen.com/groove/?feed=atom"},
-  { uri => "http://blog.epa.gov/blog/feed/"},
-  { uri => "http://www.unep.org/newscentre/rss/rss.asp?rss-id=pr&l=en"},
-  { uri => "http://feeds.feedburner.com/treehuggersite"},
-  { uri => "http://redgreenandblue.org/feed/"},
-  { uri => "http://green.yahoo.com/rss/news"},
-  { uri => "http://news.cnet.com/8300-11128_3-54.xml"},
-  { uri => "http://news.google.com/news?rls=en-us&oe=UTF-8&um=1&tab=wn&hl=en&q=Environmental&ie=UTF-8&output=atom"},
-
+                max_display => 1 },
+              { uri => "http://green.yahoo.com/rss/blogs/all" },
+              { uri => "http://www.mnn.com/rss/all-mnn-content" },
+              { uri => "http://feeds.grist.org/rss/gristfeed" },
+              { uri => "http://green.yahoo.com/rss/featured" },
+              { uri => "http://feeds.nationalgeographic.com/ng/NGM/NGM_Magazine" },
+              { uri => "http://feeds.feedburner.com/greenlivingarticles" },
+              { uri => "http://www.ecosherpa.com/feed/" },
+              { uri => "http://www.groovygreen.com/groove/?feed=atom" },
+              { uri => "http://blog.epa.gov/blog/feed/"},
+              { uri => "http://www.unep.org/newscentre/rss/rss.asp?rss-id=pr&l=en" },
+              { uri => "http://feeds.feedburner.com/treehuggersite" },
+              { uri => "http://redgreenandblue.org/feed/" },
+              { uri => "http://green.yahoo.com/rss/news" },
+              { uri => "http://news.cnet.com/8300-11128_3-54.xml" },
+              { uri => "http://news.google.com/news?rls=en-us&oe=UTF-8&um=1&tab=wn&hl=en&q=Environmental&ie=UTF-8&output=atom" },
               { title_override => "O NOES, IZ TEH DED",
                 uri => "http://rss.news.yahoo.com/rss/obits", });
  
  my $rsklr = RSSycklr->new();
  
+ binmode STDOUT, ":encoding(UTF-8)";
  $rsklr->config({ feeds => \@feeds,
                   title_only => 1 });
- print $rsklr->as_string; exit;#321
+
+ # print $rsklr->as_string;
+ 
  while ( my $feed = $rsklr->next() )
  {
-     print encode_utf8( $feed->title_override || $feed->title ), "\n";
+     print $feed->title_override || $feed->title;
+     print "\n";
      for my $entry ( $feed->entries )
      {
-         print "\t* ", encode_utf8( $entry->title ), "\n";
+         print " * ", $entry->title, "\n";
      }
  }
 
@@ -942,6 +954,8 @@ The image handling is probably the most important part. Feeds might return huge 
 Ashley Pond V, C<< <ashley@cpan.org> >>.
 
 =head1 TODO
+
+Collect errors for inspection in the object.
 
 C<as_is> flag?
 
