@@ -1,5 +1,8 @@
 Revision history for RSSycklr
-0.13    20110728
+0.14    20110730
+        - Derp. capture blocked return value.
+
+0.13    20110728 (this release is broken, lucky 13)
         - Silencing a long standing issue with noisy XML::LibXML.
         - Going back to Mouse.
         - General lack of review and checking what I may or may not

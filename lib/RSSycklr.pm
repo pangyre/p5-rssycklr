@@ -16,7 +16,7 @@ use File::Spec;
 use Encode;
 use Capture::Tiny "capture";
 
-our $VERSION = "0.13";
+our $VERSION = "0.14";
 
 has "keep_tags" =>
     is => "rw",
@@ -354,11 +354,13 @@ sub html_to_dom {
     }
 
     # XML::LibXML is noisy even with recover_silently, so-
+    my $dom;
     my ( $out, $err ) = capture {
-    $self->parse_html_string(<<"HTML");
+        $dom = $self->parse_html_string(<<"HTML");
 <html><head><title>Untitled</title></head><body>$renew</body></html>
 HTML
     };
+    $dom;
 }
 
 sub _maxed_out {
