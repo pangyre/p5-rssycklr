@@ -4,7 +4,7 @@ use inc::Module::Install;
 name "RSSycklr";
 license "perl";
 all_from "lib/RSSycklr.pm";
-resources repository => 'git@github.com:pangyre/p5-rssycklr.git';
+repository 'git://github.com/pangyre/p5-rssycklr.git';
 
 requires "Mouse";
 requires "XML::LibXML";
